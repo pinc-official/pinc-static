@@ -21,7 +21,7 @@
 
 (package
  (name pinc-static)
- (synopsis "A static html generator usind the pinc template language")
+ (synopsis "A static html generator using the pinc template language")
  (depends
   (ocaml
    (>= 4.12))

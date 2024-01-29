@@ -1,7 +1,7 @@
 opam-version: "2.0"
 name: "pinc-static"
 version: "~dev"
-synopsis: "A static html generator usind the pinc template language"
+synopsis: "A static html generator using the pinc template language"
 maintainer: "torben@ewert-online.com"
 authors: "Torben Ewert"
 license: "MIT"
