@@ -1,0 +1,75 @@
+opam-version: "2.0"
+name: "pinc-static"
+version: "~dev"
+synopsis: "A static html generator usind the pinc template language"
+maintainer: "torben@ewert-online.com"
+authors: "Torben Ewert"
+license: "MIT"
+homepage: "https://github.com/pinc-lang/pinc-static"
+bug-reports: "https://github.com/pinc-lang/pinc-static/issues"
+depends: [
+  "astring" {= "0.8.5"}
+  "base-bigarray" {= "base"}
+  "base-domains" {= "base"}
+  "base-nnp" {= "base"}
+  "base-threads" {= "base"}
+  "base-unix" {= "base"}
+  "bigarray-compat" {= "1.1.0"}
+  "bigstringaf" {= "0.9.1"}
+  "bos" {= "0.2.1"}
+  "cmdliner" {= "1.2.0"}
+  "containers" {= "3.13.1"}
+  "crunch" {= "3.3.1"}
+  "csexp" {= "1.5.2"}
+  "cstruct" {= "6.2.0"}
+  "ctypes" {= "0.21.1"}
+  "domain-local-await" {= "1.0.0"}
+  "dune" {= "3.13.0"}
+  "dune-configurator" {= "3.13.0"}
+  "eio" {= "0.14"}
+  "eio_main" {= "0.14"}
+  "eio_posix" {= "0.14"}
+  "either" {= "1.0.0"}
+  "fmt" {= "0.9.0"}
+  "fpath" {= "0.7.3"}
+  "hmap" {= "0.8.1"}
+  "integers" {= "0.7.0"}
+  "iomux" {= "0.3"}
+  "logs" {= "0.7.0"}
+  "lwt-dllist" {= "1.0.1"}
+  "mtime" {= "2.0.0"}
+  "ocaml" {= "5.1.1"}
+  "ocaml-base-compiler" {= "5.1.1"}
+  "ocaml-config" {= "3"}
+  "ocaml-options-vanilla" {= "1"}
+  "ocamlbuild" {= "0.14.3"}
+  "ocamlfind" {= "1.9.6"}
+  "optint" {= "0.3.0"}
+  "pinc-lang" {= "dev"}
+  "psq" {= "0.2.1"}
+  "ptime" {= "1.1.0"}
+  "rresult" {= "0.7.0"}
+  "seq" {= "base"}
+  "stdlib-shims" {= "0.3.0"}
+  "thread-table" {= "1.0.0"}
+  "topkg" {= "1.0.7"}
+  "yaml" {= "3.2.0"}
+]
+build: [
+  ["dune" "subst"] {dev}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
+]
+dev-repo: "git+https://github.com/pinc-lang/pinc-static.git"
+pin-depends: [
+  "pinc-lang.dev" "git+https://github.com/pinc-lang/pinc-lang#main"
+]

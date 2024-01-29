@@ -1,0 +1,7 @@
+displayIntro: true
+intro:
+  headline: "Error Handling"
+  text:
+    "A program that operates on the current directory will probably want to use cwd, whereas a program that accepts a
+    path from the user will probably want to use fs, perhaps with open_dir to constrain all access to be within that
+    directory."

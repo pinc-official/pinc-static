@@ -1,0 +1,10 @@
+(executable
+ (name static)
+ (public_name pinc)
+ (package pinc-static)
+ (modes native)
+ (ocamlopt_flags -O3)
+ (libraries pinc-lang eio eio_main yaml))
+
+(cram
+ (deps %{bin:pinc}))
