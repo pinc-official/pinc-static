@@ -57,19 +57,30 @@ let root_and_name filename =
   | _ -> None
 ;;
 
+let find_path path yaml =
+  path
+  |> List.fold_left
+       (fun acc segment ->
+         acc
+         |> Fun.flip Option.bind (function
+                | `A l -> List.nth_opt l (int_of_string segment)
+                | `O obj -> obj |> List.assoc_opt segment
+                | _ -> None))
+       (Some yaml)
+;;
+
 let main ~env =
   Printexc.record_backtrace false;
 
   let directory = Sys.argv.(1) in
   let output = try Sys.argv.(2) with Invalid_argument _ -> "output" in
 
-  let cwd = Eio.Stdenv.cwd env in
   let fs = Eio.Stdenv.fs env in
   Eio.Path.mkdirs ~exists_ok:true ~perm:0o777 (fs / output);
 
   Eio.Switch.run @@ fun sw ->
   let out = Eio.Path.open_dir ~sw (fs / output) in
-  let base = Eio.Path.open_dir ~sw (cwd / directory) in
+  let base = Eio.Path.open_dir ~sw (fs / directory) in
   let declarations, data = get_declarations_and_data ~sw base in
   let declarations_with_data =
     data
@@ -89,23 +100,55 @@ let main ~env =
            | Pinc.Ast.{ declaration_type = Declaration_Page _; _ } -> true
            | _ -> false)
     |> StringMap.iter (fun root (_declaration, name, (file, _filename, content)) ->
-           let tag_data_provider ~tag ~attributes ~key:path yaml =
+           let rec tag_data_provider ~tag ~attributes ~key:path yaml =
+             let ( let* ) = Option.bind in
              let open Pinc.Interpreter.Types.Type_Tag in
              match tag with
-             | Tag_Store -> (
+             | Tag_Store store when Interpreter.Types.Type_Store.is_singleton store ->
                  let _, name, _ =
                    attributes
                    |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
                  in
-                 match declarations_with_data |> StringMap.find_opt name with
-                 | None -> None
-                 | Some (_declaration, _name, (_file, _filename, content)) ->
-                     content
-                     |> Yaml.of_string
-                     |> Result.to_option
-                     |> Option.map yaml_to_pinc_value)
+                 let* _declaration, _name, (_file, _filename, content) =
+                   declarations_with_data |> StringMap.find_opt name
+                 in
+                 content
+                 |> Yaml.of_string
+                 |> Result.to_option
+                 |> Option.map yaml_to_pinc_value
+             | Tag_Store _store -> (
+                 let _, name, _ =
+                   attributes
+                   |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
+                 in
+                 let* _declaration, _name, (_file, _filename, content) =
+                   declarations_with_data |> StringMap.find_opt name
+                 in
+                 let* store_yaml = content |> Yaml.of_string |> Result.to_option in
+                 let* store_obj =
+                   match store_yaml with
+                   | `O o -> Some o
+                   | _ -> None
+                 in
+
+                 let value = yaml |> find_path path in
+                 match value with
+                 | Some (`String "__all__") ->
+                     store_obj
+                     |> List.map snd
+                     |> List.map yaml_to_pinc_value
+                     |> Pinc.Value.of_list
+                     |> Option.some
+                 | Some (`A list) ->
+                     list
+                     |> List.filter_map (function
+                            | `String key -> store_obj |> List.assoc_opt key
+                            | _ -> None)
+                     |> List.map yaml_to_pinc_value
+                     |> Pinc.Value.of_list
+                     |> Option.some
+                 | Some _ | None -> None)
              | Tag_Slot make_component ->
-                 let ( let* ) = Option.bind in
                  let* slot =
                    path
                    |> List.fold_left
@@ -126,43 +169,22 @@ let main ~env =
                             |> Option.map Yaml.Util.to_string_exn
                           in
                           let* attributes =
-                            component_definition
-                            |> Yaml.Util.find_exn "data"
-                            |> Option.map (function
-                                   | `O assoc ->
-                                       assoc
-                                       |> List.map (fun (key, value) ->
-                                              (key, yaml_to_pinc_value value))
-                                   | _ -> [])
+                            component_definition |> Yaml.Util.find_exn "data"
                           in
-                          make_component ~tag ~attributes |> Option.some)
+                          make_component
+                            ~tag
+                            ~tag_data_provider:(tag_data_provider attributes)
+                          |> Option.some)
                  in
 
                  components |> Pinc.Value.of_list |> Option.some
              | Tag_Array ->
-                 path
-                 |> List.fold_left
-                      (fun acc segment ->
-                        acc
-                        |> Fun.flip Option.bind (function
-                               | `A l -> List.nth_opt l (int_of_string segment)
-                               | `O obj -> obj |> List.assoc_opt segment
-                               | _ -> None))
-                      (Some yaml)
+                 yaml
+                 |> find_path path
                  |> Fun.flip Option.bind (function
                         | `A a -> List.length a |> Pinc.Value.of_int |> Option.some
                         | _ -> None)
-             | _ ->
-                 path
-                 |> List.fold_left
-                      (fun acc segment ->
-                        acc
-                        |> Fun.flip Option.bind (function
-                               | `A l -> List.nth_opt l (int_of_string segment)
-                               | `O obj -> obj |> List.assoc_opt segment
-                               | _ -> None))
-                      (Some yaml)
-                 |> Option.map yaml_to_pinc_value
+             | _ -> yaml |> find_path path |> Option.map yaml_to_pinc_value
            in
 
            let yaml = Yaml.of_string_exn content in
