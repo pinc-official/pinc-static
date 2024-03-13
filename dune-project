@@ -8,8 +8,6 @@
 
 (generate_opam_files true)
 
-(map_workspace_root false)
-
 (source
  (github pinc-lang/pinc-static))
 
@@ -24,7 +22,7 @@
  (synopsis "A static html generator using the pinc template language")
  (depends
   (ocaml
-   (>= 4.12))
+   (>= 5.1))
   pinc-lang
   dune
   yaml

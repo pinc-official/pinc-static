@@ -7,7 +7,7 @@ license: "MIT"
 homepage: "https://github.com/pinc-lang/pinc-static"
 bug-reports: "https://github.com/pinc-lang/pinc-static/issues"
 depends: [
-  "ocaml" {>= "4.12"}
+  "ocaml" {>= "5.1"}
   "pinc-lang"
   "dune" {>= "3.7"}
   "yaml"
