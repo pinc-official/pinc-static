@@ -30,5 +30,5 @@ build: [
 ]
 dev-repo: "git+https://github.com/pinc-lang/pinc-static.git"
 pin-depends: [
-  [ "pinc-lang.dev" "git+https://github.com/pinc-lang/pinc-lang#tag-cleanup" ]
+  [ "pinc-lang.dev" "git+https://github.com/pinc-lang/pinc-lang#main" ]
 ]
