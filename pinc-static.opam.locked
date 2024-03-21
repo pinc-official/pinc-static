@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "pinc-static"
-version: "~dev"
+version: "dev"
 synopsis: "A static html generator using the pinc template language"
 maintainer: "torben@ewert-online.com"
 authors: "Torben Ewert"
@@ -22,13 +22,13 @@ depends: [
   "crunch" {= "3.3.1"}
   "csexp" {= "1.5.2"}
   "cstruct" {= "6.2.0"}
-  "ctypes" {= "0.21.1"}
-  "domain-local-await" {= "1.0.0"}
-  "dune" {= "3.13.0"}
-  "dune-configurator" {= "3.13.0"}
-  "eio" {= "0.14"}
-  "eio_main" {= "0.14"}
-  "eio_posix" {= "0.14"}
+  "ctypes" {= "0.22.0"}
+  "domain-local-await" {= "1.0.1"}
+  "dune" {= "3.14.2"}
+  "dune-configurator" {= "3.14.2"}
+  "eio" {= "1.0"}
+  "eio_main" {= "1.0"}
+  "eio_posix" {= "1.0"}
   "either" {= "1.0.0"}
   "fmt" {= "0.9.0"}
   "fpath" {= "0.7.3"}

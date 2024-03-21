@@ -24,6 +24,7 @@
   (ocaml
    (>= 5.1))
   pinc-lang
+  cmdliner
   dune
   yaml
   eio_main
