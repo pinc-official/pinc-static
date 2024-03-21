@@ -8,6 +8,7 @@ homepage: "https://github.com/pinc-lang/pinc-static"
 bug-reports: "https://github.com/pinc-lang/pinc-static/issues"
 depends: [
   "ocaml" {>= "5.1"}
+  "ocaml-option-flambda"
   "pinc-lang"
   "cmdliner"
   "dune" {>= "3.7"}

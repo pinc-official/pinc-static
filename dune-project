@@ -23,6 +23,7 @@
  (depends
   (ocaml
    (>= 5.1))
+  ocaml-option-flambda
   pinc-lang
   cmdliner
   dune

@@ -39,9 +39,9 @@ depends: [
   "lwt-dllist" {= "1.0.1"}
   "mtime" {= "2.0.0"}
   "ocaml" {= "5.1.1"}
-  "ocaml-base-compiler" {= "5.1.1"}
   "ocaml-config" {= "3"}
-  "ocaml-options-vanilla" {= "1"}
+  "ocaml-option-flambda" {= "1"}
+  "ocaml-variants" {= "5.1.1+options"}
   "ocamlbuild" {= "0.14.3"}
   "ocamlfind" {= "1.9.6"}
   "optint" {= "0.3.0"}
