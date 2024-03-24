@@ -29,7 +29,7 @@ let rec eval_singleton_store attributes data =
     attributes |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
   in
   data
-  |> Declarations.find_first_source name
+  |> Declarations.find_first_build_target name
   |> Option.map Declarations.get_yaml
   |> Option.map yaml_to_pinc_value
 
@@ -38,7 +38,7 @@ and eval_multi_store attributes path data yaml =
     attributes |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
   in
   let* content =
-    data |> Declarations.find_first_source name |> Option.map Declarations.get_yaml
+    data |> Declarations.find_first_build_target name |> Option.map Declarations.get_yaml
   in
   let* store_obj =
     match content with

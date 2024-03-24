@@ -1,11 +1,10 @@
-type source = {
+type build_target = {
   declaration_name : string;
-  declaration : Pinc.Ast.declaration;
   out_path : Eio.Fs.dir_ty Eio.Path.t;
   yaml : Yaml.value;
 }
 
-type t = Pinc.Ast.declaration Pinc.StringMap.t * source list
+type t = Pinc.Source.t list * build_target list
 
 let root_and_name filename =
   match filename |> String.split_on_char '~' with
@@ -16,55 +15,41 @@ let root_and_name filename =
 ;;
 
 let build ~base ~out : t =
-  let rec loop ~data ~declarations = function
+  let rec loop ~build_targets ~sources = function
     | dir :: rest when Eio.Path.is_directory dir ->
         dir
         |> Eio.Path.read_dir
         |> List.map (fun file -> Eio.Path.(dir / file))
         |> List.append rest
-        |> loop ~data ~declarations
+        |> loop ~build_targets ~sources
     | ((_dir, filename) as file) :: rest when Filename.extension filename = ".pi" ->
-        let declarations =
-          let decls = file |> Eio.Path.load |> Pinc.Parser.parse ~filename in
-          let f key _ _ =
-            Pinc_Diagnostics.error
-              (Pinc_Diagnostics.Location.make
-                 ~s:(Pinc_Diagnostics.Location.Position.make ~filename ~line:0 ~column:0)
-                 ())
-              ("Found multiple declarations with identifier " ^ key)
-          in
-          Pinc.StringMap.union f declarations decls
-        in
-        rest |> loop ~data ~declarations
+        let source = file |> Eio.Path.load |> Pinc.Source.of_string ~filename in
+        let sources = source :: sources in
+        rest |> loop ~build_targets ~sources
     | ((_dir, filename) as file) :: rest when Filename.extension filename = ".yaml" ->
-        let data =
+        let build_targets =
           let content = file |> Eio.Path.load in
           let basename = Filename.chop_suffix (filename |> Filename.basename) ".yaml" in
-          (file, basename, content) :: data
+          (file, basename, content) :: build_targets
         in
-        rest |> loop ~data ~declarations
-    | _ :: rest -> rest |> loop ~data ~declarations
-    | [] -> (declarations, data)
+        rest |> loop ~build_targets ~sources
+    | _ :: rest -> rest |> loop ~build_targets ~sources
+    | [] -> (sources, build_targets)
   in
 
-  let declarations, data = loop ~data:[] ~declarations:Pinc.StringMap.empty [ base ] in
+  let pinc_sources, build_targets = [ base ] |> loop ~build_targets:[] ~sources:[] in
 
-  let sources =
-    data
+  let build_targets =
+    build_targets
     |> List.filter_map (fun data ->
            let file, filename, content = data in
            let yaml = Yaml.of_string_exn content in
 
-           let result =
-             Option.bind (root_and_name filename)
-             @@ fun (declaration_name, target_name) ->
-             Option.bind (declarations |> Pinc.StringMap.find_opt declaration_name)
-             @@ fun declaration -> Some (declaration_name, declaration, target_name)
-           in
+           let result = root_and_name filename in
 
            match result with
            | None -> None
-           | Some (declaration_name, declaration, target_name) ->
+           | Some (declaration_name, target_name) ->
                let files =
                  let rec loop files item =
                    match Eio.Path.split item with
@@ -82,34 +67,29 @@ let build ~base ~out : t =
                in
                let out_path = Eio.Path.(out_path / (target_name ^ ".html")) in
 
-               Some { declaration_name; declaration; out_path; yaml })
+               Some { declaration_name; out_path; yaml })
   in
 
-  (declarations, sources)
-;;
-
-let get_pages (t : t) : t =
-  ( t |> fst,
-    t
-    |> snd
-    |> List.filter @@ fun { declaration_name = _; declaration; out_path = _; yaml = _ } ->
-       match declaration with
-       | Pinc.Ast.{ declaration_type = Declaration_Page _; _ } -> true
-       | _ -> false )
+  (pinc_sources, build_targets)
 ;;
 
 let map fn (t : t) = t |> snd |> List.map fn
 let iter fn (t : t) = t |> snd |> List.iter fn
-let get_yaml source = source.yaml
+let get_yaml build_target = build_target.yaml
 
-let eval (t : t) source tag_data_provider =
+let eval (t : t) build_target tag_data_provider =
   let result =
-    t |> fst |> Pinc.Interpreter.eval ~tag_data_provider ~root:source.declaration_name
+    try
+      t
+      |> fst
+      |> Pinc.Interpreter.eval ~tag_data_provider ~root:build_target.declaration_name
+      |> Option.some
+    with Invalid_argument _ -> None
   in
 
-  (source.out_path, result)
+  (build_target.out_path, result)
 ;;
 
-let find_first_source name (t : t) =
-  t |> snd |> List.find_opt (fun source -> source.declaration_name = name)
+let find_first_build_target name (t : t) =
+  t |> snd |> List.find_opt (fun build_target -> build_target.declaration_name = name)
 ;;

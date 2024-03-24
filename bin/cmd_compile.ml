@@ -6,11 +6,13 @@ let compile_and_save sources source =
     Declarations.eval sources source @@ Tag_data_provider.run yaml sources
   in
 
-  Eio.Path.split out_file
-  |> Option.map fst
-  |> Option.iter (Eio.Path.mkdirs ~exists_ok:true ~perm:0o777);
+  result
+  |> Option.iter @@ fun html ->
+     Eio.Path.split out_file
+     |> Option.map fst
+     |> Option.iter (Eio.Path.mkdirs ~exists_ok:true ~perm:0o777);
 
-  Eio.Path.save ~append:false ~create:(`Or_truncate 0o644) out_file result
+     Eio.Path.save ~append:false ~create:(`Or_truncate 0o644) out_file html
 ;;
 
 let run source_dir output_dir _watch =
@@ -39,7 +41,6 @@ let run source_dir output_dir _watch =
   let sources = Declarations.build ~base ~out in
 
   sources
-  |> Declarations.get_pages
   |> Declarations.map (fun source () ->
          Eio.Fiber.fork ~sw @@ fun () -> compile_and_save sources source)
   |> Eio.Fiber.all
