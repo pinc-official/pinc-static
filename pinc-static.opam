@@ -4,8 +4,8 @@ synopsis: "A static html generator using the pinc template language"
 maintainer: ["torben@ewert-online.com"]
 authors: ["Torben Ewert"]
 license: "MIT"
-homepage: "https://github.com/pinc-lang/pinc-static"
-bug-reports: "https://github.com/pinc-lang/pinc-static/issues"
+homepage: "https://github.com/pinc-official/pinc-static"
+bug-reports: "https://github.com/pinc-official/pinc-static/issues"
 depends: [
   "ocaml" {>= "5.1"}
   "ocaml-option-flambda"
@@ -30,7 +30,7 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/pinc-lang/pinc-static.git"
+dev-repo: "git+https://github.com/pinc-official/pinc-static.git"
 pin-depends: [
-  [ "pinc-lang.dev" "git+https://github.com/pinc-lang/pinc-lang#main" ]
+  [ "pinc-lang.dev" "git+https://github.com/pinc-official/pinc-lang#main" ]
 ]

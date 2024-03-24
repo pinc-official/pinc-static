@@ -32,7 +32,7 @@ test:
 test-coverage:
 	if [ -d /tmp/pinc-static ]; then rm -r /tmp/pinc-static; fi
 	mkdir -p /tmp/pinc-static
-	BISECT_FILE=/tmp/pinc-lang/pinc-static dune runtest --no-print-directory --instrument-with bisect_ppx --force
+	BISECT_FILE=/tmp/pinc-official/pinc-static dune runtest --no-print-directory --instrument-with bisect_ppx --force
 	bisect-ppx-report html --coverage-path /tmp/pinc-static
 	bisect-ppx-report summary --coverage-path /tmp/pinc-static
 

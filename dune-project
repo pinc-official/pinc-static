@@ -9,7 +9,7 @@
 (generate_opam_files true)
 
 (source
- (github pinc-lang/pinc-static))
+ (github pinc-official/pinc-static))
 
 (license MIT)
 
