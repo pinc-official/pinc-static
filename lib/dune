@@ -1,4 +1,4 @@
 (library
  (name Pinc_static)
  (public_name pinc-static)
- (libraries pinc-lang eio eio_main yaml))
+ (libraries pinc-lang unix eio eio_main yaml))

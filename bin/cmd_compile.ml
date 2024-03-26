@@ -15,7 +15,16 @@ let compile_and_save sources source =
      Eio.Path.save ~append:false ~create:(`Or_truncate 0o644) out_file html
 ;;
 
-let run source_dir output_dir _watch =
+let compile ~base ~out ~sw () =
+  let sources = Declarations.build ~base ~out in
+  print_endline "Compiling sources...";
+  sources
+  |> Declarations.map (fun source () ->
+         Eio.Fiber.fork ~sw @@ fun () -> compile_and_save sources source)
+  |> Eio.Fiber.all
+;;
+
+let run source_dir output_dir watch =
   let source_dir =
     if Filename.is_relative source_dir then
       Filename.concat (Unix.getcwd ()) source_dir
@@ -38,12 +47,12 @@ let run source_dir output_dir _watch =
   let base = Eio.Path.open_dir ~sw Eio.Path.(fs / source_dir) in
   let out = Eio.Path.open_dir ~sw Eio.Path.(fs / output_dir) in
 
-  let sources = Declarations.build ~base ~out in
+  let () = compile ~base ~out ~sw () in
 
-  sources
-  |> Declarations.map (fun source () ->
-         Eio.Fiber.fork ~sw @@ fun () -> compile_and_save sources source)
-  |> Eio.Fiber.all
+  if watch then (
+    let clock = Eio.Stdenv.clock env in
+    print_endline "Watching for changes...";
+    Watcher.watch_path ~clock ~delay_in_s:1. ~path:base @@ compile ~base ~out ~sw)
 ;;
 
 let cmd =
