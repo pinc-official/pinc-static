@@ -9,11 +9,14 @@ bug-reports: "https://github.com/pinc-official/pinc-static/issues"
 depends: [
   "ocaml" {>= "5.1"}
   "ocaml-option-flambda"
-  "pinc-lang"
   "cmdliner"
   "dune" {>= "3.7"}
-  "yaml"
   "eio_main"
+  "minttea"
+  "pinc-lang"
+  "yaml"
+  "ocaml-lsp-server" {with-dev-setup}
+  "ocamlformat" {with-dev-setup}
   "odoc" {with-doc}
 ]
 build: [

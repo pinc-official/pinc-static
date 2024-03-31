@@ -4,4 +4,4 @@
  (package pinc-static)
  (modes native)
  (ocamlopt_flags -O3)
- (libraries pinc-static cmdliner))
+ (libraries pinc-static cmdliner eio eio_main minttea nottui))

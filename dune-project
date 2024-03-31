@@ -24,11 +24,11 @@
   (ocaml
    (>= 5.1))
   ocaml-option-flambda
-  pinc-lang
   cmdliner
   dune
-  yaml
   eio_main
-  ; (ocaml-lsp-server :with-dev-setup)
-  ; (ocamlformat :with-dev-setup)
-  ))
+  minttea
+  pinc-lang
+  yaml
+  (ocaml-lsp-server :with-dev-setup)
+  (ocamlformat :with-dev-setup)))

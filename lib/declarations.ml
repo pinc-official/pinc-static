@@ -14,6 +14,25 @@ let root_and_name filename =
   | _ -> None
 ;;
 
+let load_pinc_sources ~base_path =
+  let rec loop sources = function
+    | dir :: rest when Eio.Path.is_directory dir ->
+        dir
+        |> Eio.Path.read_dir
+        |> List.map (fun file -> Eio.Path.(dir / file))
+        |> List.append rest
+        |> loop sources
+    | ((_dir, filename) as file) :: rest when Filename.extension filename = ".pi" ->
+        let source = file |> Eio.Path.load |> Pinc.Source.of_string ~filename in
+        let sources = source :: sources in
+        rest |> loop sources
+    | _ :: rest -> rest |> loop sources
+    | [] -> sources
+  in
+
+  loop [] [ base_path ]
+;;
+
 let build ~base ~out : t =
   let rec loop ~build_targets ~sources = function
     | dir :: rest when Eio.Path.is_directory dir ->

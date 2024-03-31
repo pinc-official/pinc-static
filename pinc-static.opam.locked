@@ -8,8 +8,11 @@ license: "MIT"
 homepage: "https://github.com/pinc-official/pinc-static"
 bug-reports: "https://github.com/pinc-official/pinc-static/issues"
 depends: [
+  "angstrom" {= "0.16.0"}
   "astring" {= "0.8.5"}
+  "base" {= "v0.16.3" & with-dev-setup}
   "base-bigarray" {= "base"}
+  "base-bytes" {= "base" & with-dev-setup}
   "base-domains" {= "base"}
   "base-nnp" {= "base"}
   "base-threads" {= "base"}
@@ -17,19 +20,28 @@ depends: [
   "bigarray-compat" {= "1.1.0"}
   "bigstringaf" {= "0.9.1"}
   "bos" {= "0.2.1"}
+  "camlp-streams" {= "5.0.1" & with-dev-setup}
+  "chrome-trace" {= "3.14.2" & with-dev-setup}
   "cmdliner" {= "1.2.0"}
+  "conf-bash" {= "1" & with-dev-setup}
   "containers" {= "3.13.1"}
+  "cppo" {= "1.6.9" & with-dev-setup}
   "crunch" {= "3.3.1"}
   "csexp" {= "1.5.2"}
   "cstruct" {= "6.2.0"}
   "ctypes" {= "0.22.0"}
   "domain-local-await" {= "1.0.1"}
   "dune" {= "3.14.2"}
+  "dune-build-info" {= "3.14.2" & with-dev-setup}
   "dune-configurator" {= "3.14.2"}
+  "dune-rpc" {= "3.14.2" & with-dev-setup}
+  "dyn" {= "3.14.2" & with-dev-setup}
   "eio" {= "1.0"}
   "eio_main" {= "1.0"}
   "eio_posix" {= "1.0"}
   "either" {= "1.0.0"}
+  "fiber" {= "3.7.0" & with-dev-setup}
+  "fix" {= "20230505" & with-dev-setup}
   "fmt" {= "0.9.0"}
   "fpath" {= "0.7.3"}
   "hmap" {= "0.8.1"}
@@ -37,23 +49,56 @@ depends: [
   "iomux" {= "0.3"}
   "logs" {= "0.7.0"}
   "lwt-dllist" {= "1.0.1"}
+  "menhir" {= "20231231" & with-dev-setup}
+  "menhirCST" {= "20231231" & with-dev-setup}
+  "menhirLib" {= "20231231" & with-dev-setup}
+  "menhirSdk" {= "20231231" & with-dev-setup}
+  "merlin-lib" {= "4.14-501" & with-dev-setup}
+  "minttea" {= "0.0.2"}
   "mtime" {= "2.0.0"}
   "ocaml" {= "5.1.1"}
   "ocaml-config" {= "3"}
+  "ocaml-lsp-server" {= "1.17.0" & with-dev-setup}
   "ocaml-option-flambda" {= "1"}
+  "ocaml-syntax-shims" {= "1.0.0"}
   "ocaml-variants" {= "5.1.1+options"}
+  "ocaml-version" {= "3.6.5" & with-dev-setup}
   "ocamlbuild" {= "0.14.3"}
+  "ocamlc-loc" {= "3.14.2" & with-dev-setup}
   "ocamlfind" {= "1.9.6"}
+  "ocamlformat" {= "0.26.1" & with-dev-setup}
+  "ocamlformat-lib" {= "0.26.1" & with-dev-setup}
+  "ocamlformat-rpc-lib" {= "0.26.1" & with-dev-setup}
+  "ocp-indent" {= "1.8.1" & with-dev-setup}
   "optint" {= "0.3.0"}
+  "ordering" {= "3.14.2" & with-dev-setup}
   "pinc-lang" {= "dev"}
+  "pp" {= "1.2.0" & with-dev-setup}
+  "ppx_yojson_conv_lib" {= "v0.16.0" & with-dev-setup}
   "psq" {= "0.2.1"}
   "ptime" {= "1.1.0"}
+  "re" {= "1.11.0" & with-dev-setup}
+  "result" {= "1.5" & with-dev-setup}
+  "riot" {= "0.0.5"}
   "rresult" {= "0.7.0"}
   "seq" {= "base"}
+  "sexplib0" {= "v0.16.0" & with-dev-setup}
+  "spawn" {= "v0.15.1" & with-dev-setup}
+  "stdio" {= "v0.16.0" & with-dev-setup}
   "stdlib-shims" {= "0.3.0"}
+  "stdune" {= "3.14.2" & with-dev-setup}
+  "stringext" {= "1.6.0"}
+  "telemetry" {= "0.0.1"}
   "thread-table" {= "1.0.0"}
   "topkg" {= "1.0.7"}
+  "tty" {= "0.0.2"}
+  "uri" {= "4.4.0"}
+  "uucp" {= "15.1.0" & with-dev-setup}
+  "uuseg" {= "15.1.0" & with-dev-setup}
+  "uutf" {= "1.0.3"}
+  "xdg" {= "3.14.2" & with-dev-setup}
   "yaml" {= "3.2.0"}
+  "yojson" {= "2.1.2" & with-dev-setup}
 ]
 build: [
   ["dune" "subst"] {dev}

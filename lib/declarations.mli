@@ -3,6 +3,7 @@ type t
 
 val map : (build_target -> 'a) -> t -> 'a list
 val iter : (build_target -> unit) -> t -> unit
+val load_pinc_sources : base_path:Eio.Fs.dir_ty Eio.Path.t -> Pinc.Source.t list
 val build : base:Eio.Fs.dir_ty Eio.Path.t -> out:Eio.Fs.dir_ty Eio.Path.t -> t
 val get_yaml : build_target -> Yaml.value
 
