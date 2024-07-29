@@ -1,16 +1,16 @@
 let ( let* ) = Option.bind
 
 let rec yaml_to_pinc_value = function
-  | `A list -> list |> List.map yaml_to_pinc_value |> Pinc.Value.of_list
-  | `Bool b -> Pinc.Value.of_bool b
-  | `Float f -> Pinc.Value.of_float f
-  | `Null -> Pinc.Value.null ()
+  | `A list -> list |> List.map yaml_to_pinc_value |> Pinc.Helpers.Value.list
+  | `Bool b -> Pinc.Helpers.Value.bool b
+  | `Float f -> Pinc.Helpers.Value.float f
+  | `Null -> Pinc.Helpers.Value.null ()
   | `O assoc ->
       assoc
       |> Pinc.StringMap.of_list
       |> Pinc.StringMap.map yaml_to_pinc_value
-      |> Pinc.Value.of_string_map
-  | `String s -> Pinc.Value.of_string s
+      |> Pinc.Helpers.Value.record
+  | `String s -> Pinc.Helpers.Value.string s
 ;;
 
 let find_path path yaml =
@@ -26,7 +26,7 @@ let find_path path yaml =
 
 let rec eval_singleton_store attributes data =
   let _, name, _ =
-    attributes |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
+    attributes |> Pinc.Helpers.Expect.(required (attribute "id" definition_info))
   in
   data
   |> Declarations.find_first_build_target name
@@ -35,7 +35,7 @@ let rec eval_singleton_store attributes data =
 
 and eval_multi_store attributes path data yaml =
   let _, name, _ =
-    attributes |> Pinc.Typer.Expect.(required (attribute "id" definition_info))
+    attributes |> Pinc.Helpers.Expect.(required (attribute "id" definition_info))
   in
   let* content =
     data |> Declarations.find_first_build_target name |> Option.map Declarations.get_yaml
@@ -52,7 +52,7 @@ and eval_multi_store attributes path data yaml =
       store_obj
       |> List.map snd
       |> List.map yaml_to_pinc_value
-      |> Pinc.Value.of_list
+      |> Pinc.Helpers.Value.list
       |> Option.some
   | Some (`A list) ->
       list
@@ -60,7 +60,7 @@ and eval_multi_store attributes path data yaml =
              | `String key -> store_obj |> List.assoc_opt key
              | _ -> None)
       |> List.map yaml_to_pinc_value
-      |> Pinc.Value.of_list
+      |> Pinc.Helpers.Value.list
       |> Option.some
   | Some _ | None -> None
 
@@ -82,18 +82,23 @@ and eval_slot path data yaml make_component =
              |> Option.map Yaml.Util.to_string_exn
            in
            let* attributes = component_definition |> Yaml.Util.find_exn "data" in
-           make_component ~tag ~tag_data_provider:(run attributes data) |> Option.some)
+           make_component
+             ~tag
+             ~tag_data_provider:(run attributes data)
+             ~tag_meta_provider:Pinc.Helpers.noop_meta_provider
+           |> snd
+           |> Option.some)
   in
 
-  components |> Pinc.Value.of_list |> Option.some
+  components |> Pinc.Helpers.Value.list |> Option.some
 
 and eval_array path yaml =
   let* value = yaml |> find_path path in
   match value with
-  | `A a -> List.length a |> Pinc.Value.of_int |> Option.some
+  | `A a -> List.length a |> Pinc.Helpers.Value.int |> Option.some
   | _ -> None
 
-and run ~tag ~attributes ~key:path yaml data =
+and run ~tag ~attributes ~required:_ ~key:path yaml data =
   let open Pinc.Interpreter.Types.Type_Tag in
   match tag with
   | Tag_Store store when Pinc.Interpreter.Types.Type_Store.is_singleton store ->

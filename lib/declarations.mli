@@ -10,6 +10,7 @@ val eval :
   t ->
   build_target ->
   Pinc.Interpreter.Types.Type_Tag.data_provider ->
-  Eio.Fs.dir_ty Eio.Path.t * string option
+  Eio.Fs.dir_ty Eio.Path.t
+  * (string * (string * Pinc.Interpreter.Types.Type_Tag.meta) list) option
 
 val find_first_build_target : string -> t -> build_target option

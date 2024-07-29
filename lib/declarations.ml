@@ -82,7 +82,9 @@ let eval (t : t) build_target tag_data_provider =
     try
       t
       |> fst
-      |> Pinc.Interpreter.eval ~tag_data_provider ~root:build_target.declaration_name
+      |> Pinc.Interpreter.eval_sources
+           ~tag_data_provider
+           ~root:build_target.declaration_name
       |> Option.some
     with Invalid_argument _ -> None
   in

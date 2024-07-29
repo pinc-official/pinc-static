@@ -7,7 +7,7 @@ let compile_and_save sources source =
   in
 
   result
-  |> Option.iter @@ fun html ->
+  |> Option.iter @@ fun (html, _meta) ->
      Eio.Path.split out_file
      |> Option.map fst
      |> Option.iter (Eio.Path.mkdirs ~exists_ok:true ~perm:0o777);
